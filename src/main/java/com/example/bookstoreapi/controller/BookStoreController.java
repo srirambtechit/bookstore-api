@@ -2,14 +2,13 @@ package com.example.bookstoreapi.controller;
 
 import com.example.bookstoreapi.model.Book;
 import com.example.bookstoreapi.repository.BookStoreRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-
-import static org.springframework.http.HttpStatus.OK;
+import javax.validation.constraints.NotNull;
 
 @RestController
 public class BookStoreController {
@@ -20,26 +19,29 @@ public class BookStoreController {
         this.repository = repository;
     }
 
-    @PostMapping("/book")
-    public ResponseEntity<Book> saveBook(@Valid @RequestBody Book book) {
-        return new ResponseEntity<>(repository.save(book), OK);
+    @PostMapping(value = "/book")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Book saveBook(@NotNull @Valid @RequestBody Book book) {
+        return repository.save(book);
     }
 
     @GetMapping("/books")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Iterable<Book>> getAllBooks() {
-        return new ResponseEntity<>(repository.findAll(), OK);
+        return ResponseEntity.ok(repository.findAll());
     }
 
     @PutMapping("/book")
     public ResponseEntity<Book> updateBook(@Valid @RequestBody Book book) {
         boolean bookExists = repository.existsById(book.getId());
-        return bookExists ? saveBook(book) : ResponseEntity.notFound().build();
+        return bookExists ? ResponseEntity.ok(saveBook(book)) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/book/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable @Min(1) Integer id) {
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteBook(@PathVariable @Min(1) Integer id) {
         repository.deleteById(id);
-        return ResponseEntity.ok("Book #" + id + " is deleted");
+        return "Book #" + id + " is deleted";
     }
 
 }
