@@ -19,7 +19,7 @@ POST http://localhost:8080/book
 Content-Type: application/json
 
 {
-  "name": "Kotlin Programming",
+  "name": "Scala Programming",
   "price": 40.45
 }
 

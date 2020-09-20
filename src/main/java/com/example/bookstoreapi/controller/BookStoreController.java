@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -18,7 +21,7 @@ public class BookStoreController {
     }
 
     @PostMapping("/book")
-    public ResponseEntity<Book> saveBook(@RequestBody Book book) {
+    public ResponseEntity<Book> saveBook(@Valid @RequestBody Book book) {
         return new ResponseEntity<>(repository.save(book), OK);
     }
 
@@ -28,13 +31,13 @@ public class BookStoreController {
     }
 
     @PutMapping("/book")
-    public ResponseEntity<Book> updateBook(@RequestBody Book book) {
+    public ResponseEntity<Book> updateBook(@Valid @RequestBody Book book) {
         boolean bookExists = repository.existsById(book.getId());
         return bookExists ? saveBook(book) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/book/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteBook(@PathVariable @Min(1) Integer id) {
         repository.deleteById(id);
         return ResponseEntity.ok("Book #" + id + " is deleted");
     }
